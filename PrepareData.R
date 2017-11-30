@@ -25,8 +25,8 @@ prepareData = function(inputFile) {
     donorIndex = lapply(intronBorders, function(l) l[c(TRUE,FALSE)])        # pozycje donorow - nieparzyste w listach
     akceptorIndex = lapply(intronBorders, function(l) l[c(FALSE,TRUE)])     # pozycje akceptorow - parzyste
  
-    trueDonor = mapply(cutSeq, DNAseq, donorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE)         # wyciecie z sekwencji prawdziwych donorow
-    trueAkceptor = mapply(cutSeq, DNAseq, akceptorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE)   # wyciecie z sekwencji prawdziwych akceptorow
+    trueDonor = unlist(mapply(cutSeq, DNAseq, donorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))         # wyciecie z sekwencji prawdziwych donorow
+    trueAkceptor = unlist(mapply(cutSeq, DNAseq, akceptorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))   # wyciecie z sekwencji prawdziwych akceptorow
 #    out
 
 }

@@ -1,4 +1,4 @@
-atrNum = 10                                                                 # ustalenie liczby atrybutow kazdego z przykladow
+atrNum = 100                                                                 # ustalenie liczby atrybutow kazdego z przykladow
 
 myCut = function(index, str) {                                                                  # funkcja wycina podciag atrNum znakow
     tmp = substr(x = str, start = index - (atrNum / 2), stop = index + (atrNum / 2) -1)         # z duzego ciagu znakow
@@ -24,10 +24,13 @@ prepareData = function(inputFile) {
 
     donorIndex = lapply(intronBorders, function(l) l[c(TRUE,FALSE)])        # pozycje donorow - nieparzyste w listach
     akceptorIndex = lapply(intronBorders, function(l) l[c(FALSE,TRUE)])     # pozycje akceptorow - parzyste
- 
+
     trueDonor = unlist(mapply(cutSeq, DNAseq, donorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))         # wyciecie z sekwencji prawdziwych donorow
     trueAkceptor = unlist(mapply(cutSeq, DNAseq, akceptorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))   # wyciecie z sekwencji prawdziwych akceptorow
-#    out
+
+    trueDonor = trueDonor[nchar(trueDonor) == atrNum]                       # usuniecie sekwencji donorow i akceptorow o dlugosci mniejszej od atrNum
+    trueAkceptor = trueAkceptor[nchar(trueAkceptor) == atrNum]              # dla atrNum = 100, jest to tylko dwa przyklady
+
 
 }
 

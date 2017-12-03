@@ -19,7 +19,7 @@ removeDups = function(falIdVec, trueIdVec) {                                    
     invisible(falIdVec - 1)                                                 # -1 zeby pozycja GT/AG pokrywala sie z prawdziwymi koncami intronow
 }
 
-prepareData = function(inputFile) {
+prepareData = function(inputFile, donorOutFile, akceptorOutFile) {
     raw = readLines(inputFile)                                              # wczytaj caly plik z danymi DNA
     intronBordersLines = grep(raw, pattern="Introns") + 1                   # znajdz numery lini zawierajace poczatki i konce intronów
     intronBorders = raw[intronBordersLines]                                 # znajdz liczby okreslajace poczatki i konce intronów
@@ -49,9 +49,30 @@ prepareData = function(inputFile) {
     falseAkceptor = unlist(mapply(cutSeq, DNAseq, falseAkceptorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))   # wyciecie z sekwencji falszywych akceptorow
     falseDonor = falseDonor[nchar(falseDonor) == atrNum]                       # usuniecie sekwencji falszywych donorow i akceptorow o dlugosci mniejszej od atrNum
     falseAkceptor = falseAkceptor[nchar(falseAkceptor) == atrNum]              
+   
+    tmp = strsplit(trueDonor,"")
+    trueDonorDF = data.frame(do.call(rbind, tmp))       
+    trueDonorDF$Y = 1                                                       # zrobienie dataframe z prawdziwych donorow i dodanie kolumny Y=1
+    tmp = strsplit(falseDonor,"")
+    falseDonorDF = data.frame(do.call(rbind, tmp))
+    falseDonorDF$Y = 0                                                      # zrobienie dataframe z falszywych donorow, Y=0
 
+    allDonor <- rbind(trueDonorDF, falseDonorDF)                            # wspolny dataframe z wszystkimi donorami
+    
+    tmp = strsplit(trueAkceptor,"")
+    trueAkceptorDF = data.frame(do.call(rbind, tmp))       
+    trueAkceptorDF$Y = 1                                                    # zrobienie dataframe z prawdziwych akceptorow i dodanie kolumny Y=1
+    tmp = strsplit(falseAkceptor,"")
+    falseAkceptorDF = data.frame(do.call(rbind, tmp))
+    falseAkceptorDF$Y = 0                                                   # zrobienie dataframe z falszywych akceptorow, Y=0
+
+    allAkceptor <- rbind(trueAkceptorDF, falseAkceptorDF)                   # wspolny dataframe z wszystkimi donorami
+
+    write.csv(file=donorOutFile, x=allDonor)                                  # zapis dataframe do plikow
+    write.csv(file=akceptorOutFile, x=allAkceptor)
+    #inTrain<- createDataPartition(y=spam$type,p=0.75, list=FALSE) przyda sie do podzialu losowego
 }
 
 
-print(prepareData("araclean.dat"))
+prepareData("araclean.dat", "donory.csv", "akceptory.csv")
 

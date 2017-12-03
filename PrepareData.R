@@ -10,6 +10,15 @@ cutSeq = function(str, index) {                                                 
     invisible(tmp)
 }
 
+removeDups = function(falIdVec, trueIdVec) {                                                    # funkcja usuwa z indeksow falszywych donorow/akceptorow
+    lowBorder = trueIdVec - atrNum                                                              # te ktore pokrywaja sie z prawdziwymi
+    hiBorder = trueIdVec + atrNum
+    for (i in 1:length(trueIdVec)) {
+        falIdVec = falIdVec[ falIdVec > hiBorder[i] | falIdVec < lowBorder[i]  ] 
+    }
+    invisible(falIdVec - 1)                                                 # -1 zeby pozycja GT/AG pokrywala sie z prawdziwymi koncami intronow
+}
+
 prepareData = function(inputFile) {
     raw = readLines(inputFile)                                              # wczytaj caly plik z danymi DNA
     intronBordersLines = grep(raw, pattern="Introns") + 1                   # znajdz numery lini zawierajace poczatki i konce intronów
@@ -17,7 +26,7 @@ prepareData = function(inputFile) {
     
     DNAseqLines = grep(raw, pattern="Data") + 1
     DNAseq = raw[DNAseqLines]                                               # to samo dla sekwencji DNA
-
+    
     intronBorders = substring(intronBorders, 2)                             # usuniecie pierwszej spacji z ciagow 
     intronBorders = strsplit(intronBorders, split = " ")                    # stringi na listy stringow
     intronBorders = lapply(intronBorders, as.numeric)                       # listy stringow na listy liczb
@@ -27,10 +36,19 @@ prepareData = function(inputFile) {
 
     trueDonor = unlist(mapply(cutSeq, DNAseq, donorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))         # wyciecie z sekwencji prawdziwych donorow
     trueAkceptor = unlist(mapply(cutSeq, DNAseq, akceptorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))   # wyciecie z sekwencji prawdziwych akceptorow
-
     trueDonor = trueDonor[nchar(trueDonor) == atrNum]                       # usuniecie sekwencji donorow i akceptorow o dlugosci mniejszej od atrNum
     trueAkceptor = trueAkceptor[nchar(trueAkceptor) == atrNum]              # dla atrNum = 100, jest to tylko dwa przyklady
 
+    #Przygotowanie falszywych przykladow
+    gtIndex = gregexpr(pattern = "GT", DNAseq)                              # znalezienie miejsc GT i AG w sekwencjach
+    agIndex = gregexpr(pattern = "AG", DNAseq)
+    falseDonorIndex = mapply(removeDups, gtIndex, donorIndex)               # usuniecie tych miejsc, ktore pokrywaja sie z prawdziwymi koncami intronowi
+    falseAkceptorIndex = mapply(removeDups, agIndex, akceptorIndex)
+
+    falseDonor = unlist(mapply(cutSeq, DNAseq, falseDonorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))         # wyciecie z sekwencji falszywych donorow
+    falseAkceptor = unlist(mapply(cutSeq, DNAseq, falseAkceptorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))   # wyciecie z sekwencji falszywych akceptorow
+    falseDonor = falseDonor[nchar(falseDonor) == atrNum]                       # usuniecie sekwencji falszywych donorow i akceptorow o dlugosci mniejszej od atrNum
+    falseAkceptor = falseAkceptor[nchar(falseAkceptor) == atrNum]              
 
 }
 

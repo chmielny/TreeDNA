@@ -47,30 +47,33 @@ prepareData = function(inputFile, donorOutFile, akceptorOutFile) {
 
     falseDonor = unlist(mapply(cutSeq, DNAseq, falseDonorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))         # wyciecie z sekwencji falszywych donorow
     falseAkceptor = unlist(mapply(cutSeq, DNAseq, falseAkceptorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))   # wyciecie z sekwencji falszywych akceptorow
-    falseDonor = falseDonor[nchar(falseDonor) == atrNum]                       # usuniecie sekwencji falszywych donorow i akceptorow o dlugosci mniejszej od atrNum
+    falseDonor = falseDonor[nchar(falseDonor) == atrNum]                    # usuniecie sekwencji falszywych donorow i akceptorow o dlugosci mniejszej od atrNum
     falseAkceptor = falseAkceptor[nchar(falseAkceptor) == atrNum]              
    
+    trueDonor = trueDonor[- grep("N", trueDonor)]                           # usuniecie sekwencji zawierajacych "N" - w DNA sa tylko GTAC
     tmp = strsplit(trueDonor,"")
     trueDonorDF = data.frame(do.call(rbind, tmp))       
     trueDonorDF$Y = 1                                                       # zrobienie dataframe z prawdziwych donorow i dodanie kolumny Y=1
+    falseDonor = falseDonor[- grep("N", falseDonor)]                        # usuniecie sekwencji zawierajacych "N" - w DNA sa tylko GTAC
     tmp = strsplit(falseDonor,"")
     falseDonorDF = data.frame(do.call(rbind, tmp))
     falseDonorDF$Y = 0                                                      # zrobienie dataframe z falszywych donorow, Y=0
 
-    allDonor <- rbind(trueDonorDF, falseDonorDF)                            # wspolny dataframe z wszystkimi donorami
-    
+    allDonor = rbind(trueDonorDF, falseDonorDF)                             # wspolny dataframe z wszystkimi donorami
+   
+    trueAkceptor = trueAkceptor[- grep("N", trueAkceptor)]                  # usuniecie sekwencji zawierajacych "N" - w DNA sa tylko GTAC
     tmp = strsplit(trueAkceptor,"")
     trueAkceptorDF = data.frame(do.call(rbind, tmp))       
     trueAkceptorDF$Y = 1                                                    # zrobienie dataframe z prawdziwych akceptorow i dodanie kolumny Y=1
+    falseAkceptor = falseAkceptor[- grep("N", falseAkceptor)]               # usuniecie sekwencji zawierajacych "N" - w DNA sa tylko GTAC 
     tmp = strsplit(falseAkceptor,"")
     falseAkceptorDF = data.frame(do.call(rbind, tmp))
     falseAkceptorDF$Y = 0                                                   # zrobienie dataframe z falszywych akceptorow, Y=0
 
-    allAkceptor <- rbind(trueAkceptorDF, falseAkceptorDF)                   # wspolny dataframe z wszystkimi donorami
+    allAkceptor = rbind(trueAkceptorDF, falseAkceptorDF)                    # wspolny dataframe z wszystkimi donorami
 
-    write.csv(file=donorOutFile, x=allDonor)                                  # zapis dataframe do plikow
+    write.csv(file=donorOutFile, x=allDonor)                                # zapis dataframe do plikow
     write.csv(file=akceptorOutFile, x=allAkceptor)
-    #inTrain<- createDataPartition(y=spam$type,p=0.75, list=FALSE) przyda sie do podzialu losowego
 }
 
 

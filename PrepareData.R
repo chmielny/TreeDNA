@@ -16,7 +16,7 @@ removeDups = function(falIdVec, trueIdVec) {                                    
     for (i in 1:length(trueIdVec)) {
         falIdVec = falIdVec[ falIdVec > hiBorder[i] | falIdVec < lowBorder[i]  ] 
     }
-    invisible(falIdVec - 1)                                                 # -1 zeby pozycja GT/AG pokrywala sie z prawdziwymi koncami intronow
+    invisible(falIdVec) 
 }
 
 prepareData = function(inputFile, donorOutFile, akceptorOutFile) {
@@ -32,6 +32,7 @@ prepareData = function(inputFile, donorOutFile, akceptorOutFile) {
     intronBorders = lapply(intronBorders, as.numeric)                       # listy stringow na listy liczb
 
     donorIndex = lapply(intronBorders, function(l) l[c(TRUE,FALSE)])        # pozycje donorow - nieparzyste w listach
+    donorIndex = sapply(donorIndex, function(l) l + 1)                      # zwiekszenie indeksow donorow o 1, w celu pokrywania sie sekw. GT w praw. i falszywych
     akceptorIndex = lapply(intronBorders, function(l) l[c(FALSE,TRUE)])     # pozycje akceptorow - parzyste
 
     trueDonor = unlist(mapply(cutSeq, DNAseq, donorIndex, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = FALSE))         # wyciecie z sekwencji prawdziwych donorow

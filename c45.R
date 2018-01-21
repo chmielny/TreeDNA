@@ -1,7 +1,7 @@
 library(RWeka)
 library("ROCR")
 
-trainData = read.csv("donory_trening.csv"")
+trainData = read.csv("donory_trening.csv")
 testData =  read.csv("donory_test.csv")
 trainData = within(trainData, rm(X))
 testData = within(testData, rm(X))

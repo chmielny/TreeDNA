@@ -14,7 +14,7 @@ CARTtest = function(trainCSV, testCSV) {
             auc <- auc@y.values[[1]]  
             if (auc >= bestAUC) {
                 bestAUC = auc
-	        bestAB[nrow(bestAB) + 1,] = c(A, B, auc)
+		        bestAB[nrow(bestAB) + 1,] = c(A, B, auc)
             }	
         }
     }

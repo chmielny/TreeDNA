@@ -1,15 +1,9 @@
 library(RWeka)
 library("ROCR")
 
-WPM("refresh-cache")
-WPM("list-packages", "available")
-WPM("install-package", "simpleEducationalLearningSchemes")
-WPM("load-package", "simpleEducationalLearningSchemes")
-
-ID3 = make_Weka_classifier("weka/classifiers/trees/Id3")
-trainData = read.csv("donory_trening.csv")
+trainData = read.csv("donory_trening.csv"")
 testData =  read.csv("donory_test.csv")
-trainData = within(trainData, rm(X))                            
+trainData = within(trainData, rm(X))
 testData = within(testData, rm(X))
 
 bestAUC = 0;
@@ -17,7 +11,7 @@ bestAB = data.frame(A = integer(), B = integer())
 for (A in 5:10){
   for (B in 5:10)	{
     cutTrainData = trainData[,c( (51-A):(51+B), 101)]
-    tree = ID3(as.factor(Y)~ ., cutTrainData)
+    tree = J48(as.factor(Y)~., cutTrainData)
     pred = prediction(predict(tree, testData, type = "probability")[, 2], testData$Y)
     auc = performance(pred, measure = "auc")
     auc <- auc@y.values[[1]]
@@ -29,3 +23,4 @@ for (A in 5:10){
 }
 print(bestAUC)
 print(bestAB)
+  
